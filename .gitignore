@@ -1,0 +1,55 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Backups
+backups/
+
+# Uploaded files (can be large)
+uploads/*
+!uploads/.gitkeep
+
+# Node (if using npm)
+node_modules/
+package-lock.json
+
+# Composer (if using PHP composer)
+vendor/
+composer.lock
+
+# Docker volumes
+.docker/
+mysql_data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Custom files
+.well-known/submit.php.enhanced
+test*.php
+debug*.php
+
+# IDE specific
+.vscode/
+.idea/
+*.code-workspace

@@ -1,0 +1,8 @@
+# Protect admin folder - deny direct file browsing
+Options -Indexes
+
+# Only allow PHP files, CSS, JS
+<FilesMatch "^(?!.*\.(php|css|js)$)">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

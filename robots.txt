@@ -1,0 +1,44 @@
+# FSPO Ltd - robots.txt
+# This file tells search engines what to crawl and what to avoid
+
+User-agent: *
+Allow: /
+Allow: /index.php
+Allow: /shop.php
+Allow: /product.php
+Allow: /about.php
+Allow: /contact.php
+Allow: /css/
+Allow: /js/
+Allow: /uploads/
+
+# Disallow paths that shouldn't be indexed
+Disallow: /admin/
+Disallow: /client/
+Disallow: /includes/
+Disallow: /ajax/
+Disallow: /login.php
+Disallow: /register.php
+Disallow: /logout.php
+Disallow: /cart.php
+Disallow: /checkout.php
+Disallow: /wishlist.php
+Disallow: /newsletter.php
+Disallow: /*?*redirect=
+Disallow: /*?*sort=
+Disallow: /*?*page=2
+Disallow: /*?*page=3
+Disallow: /*?*page=4
+Disallow: /*?*page=5
+
+# Crawl delay to avoid overloading the server
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: http://localhost:8000/sitemap.xml
+
+# Google Search Console verification
+# Note: Update with your actual verification file
+
+# Bing Webmaster Tools
+# Note: Update with your actual verification file

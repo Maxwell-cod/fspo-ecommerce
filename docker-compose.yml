@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fspo-web
+    ports:
+      - "80:80"
+    environment:
+      - DB_HOST=db
+      - DB_USER=fspo_user
+      - DB_PASSWORD=fspo_password
+      - DB_NAME=fspo_db
+      - SITE_URL=http://localhost
+      - APP_ENV=development
+      - APP_DEBUG=true
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/var/www/html/uploads
+      - ./logs:/var/www/html/logs
+      - ./backups:/var/www/html/backups
+      - .:/var/www/html
+    networks:
+      - fspo-network
+    restart: unless-stopped
+
+  db:
+    image: mysql:10.11
+    container_name: fspo-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password_123
+      - MYSQL_USER=fspo_user
+      - MYSQL_PASSWORD=fspo_password
+      - MYSQL_DATABASE=fspo_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    networks:
+      - fspo-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: fspo-phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=fspo_user
+      - PMA_PASSWORD=fspo_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - fspo-network
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  fspo-network:
+    driver: bridge

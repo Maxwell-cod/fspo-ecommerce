@@ -1,0 +1,83 @@
+# FSPO Ltd – Apache Security & SEO Rules
+Options -Indexes
+
+# ─── URL Rewriting ──────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Protect includes folder from direct access
+    RewriteRule ^includes/ - [F,L]
+    RewriteRule ^database\.sql - [F,L]
+    
+    # Rewrite sitemap.xml to sitemap.xml.php
+    RewriteRule ^sitemap\.xml$ sitemap.xml.php [L]
+    
+    # SEO-friendly URL for product detail (optional)
+    # RewriteCond %{REQUEST_FILENAME} !-f
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteRule ^products/([a-zA-Z0-9-]+)/?$ product.php?slug=$1 [QSA,L]
+    
+    # Remove .php extension (optional - use if desired)
+    # RewriteCond %{REQUEST_FILENAME} !-f
+    # RewriteRule ^([^\.]+)$ $1.php [L]
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "\.(sql|log|env|ini|sh|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# XSS and clickjacking protection
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# ─── Performance & Caching ──────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/truetype "access plus 1 year"
+    ExpiresByType font/opentype "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    
+    # Default
+    ExpiresDefault "access plus 2 days"
+</IfModule>
+
+# ─── Compression ────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# ─── HTTPS Redirect (Uncomment if using SSL) ────────────────────
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
