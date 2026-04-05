@@ -12,7 +12,21 @@ define('DB_PORT', getenv('DB_PORT') ?: '3306');
 define('DB_DRIVER', getenv('DB_DRIVER') ?: 'mysql');
 
 define('SITE_NAME', 'FSPO Ltd');
-define('SITE_URL',  getenv('SITE_URL') ?: 'http://localhost:8000');
+
+// ─── Intelligent SITE_URL Detection ──────────────────────────
+// Priority 1: Environment variable (if explicitly set on Render)
+// Priority 2: Detect from HTTP_HOST (automatic on Render)
+// Priority 3: Default to localhost for local development
+if ($siteUrl = getenv('SITE_URL')) {
+    // Explicitly set via environment variable
+    define('SITE_URL', $siteUrl);
+} else {
+    // Auto-detect from HTTP_HOST
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
+    define('SITE_URL', $protocol . $host);
+}
+
 define('SITE_EMAIL','info@fspoltd.rw');
 define('SITE_PHONE','+250 785 723 677');
 define('SITE_ADDRESS','Kigali-Gakinjiro, Rwanda');
