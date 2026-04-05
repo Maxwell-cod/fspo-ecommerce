@@ -21,8 +21,10 @@ if ($siteUrl = getenv('SITE_URL')) {
     // Explicitly set via environment variable
     define('SITE_URL', $siteUrl);
 } else {
-    // Auto-detect from HTTP_HOST
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    // Auto-detect from HTTP_HOST with proper HTTPS detection
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+               (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    $protocol = $isHttps ? 'https://' : 'http://';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8000';
     define('SITE_URL', $protocol . $host);
 }
