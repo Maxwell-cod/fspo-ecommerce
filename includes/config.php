@@ -3,13 +3,16 @@
 require_once __DIR__ . '/error-handler.php';
 
 // ─── FSPO Ltd – Configuration ───────────────────────────────
-define('DB_HOST', 'localhost');
-define('DB_USER', 'fspo_user');        // Change to your MySQL username
-define('DB_PASS', 'fspo_password');    // Change to your MySQL password
-define('DB_NAME', 'fspo_db');
+// Support both environment variables (Render) and hardcoded values (Local development)
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('DB_USER') ?: 'fspo_user');
+define('DB_PASS', getenv('DB_PASSWORD') ?: 'fspo_password');
+define('DB_NAME', getenv('DB_NAME') ?: 'fspo_db');
+define('DB_PORT', getenv('DB_PORT') ?: '3306');
+define('DB_DRIVER', getenv('DB_DRIVER') ?: 'mysql');
 
 define('SITE_NAME', 'FSPO Ltd');
-define('SITE_URL',  'http://localhost:8000');  // Change to your domain
+define('SITE_URL',  getenv('SITE_URL') ?: 'http://localhost:8000');
 define('SITE_EMAIL','info@fspoltd.rw');
 define('SITE_PHONE','+250 785 723 677');
 define('SITE_ADDRESS','Kigali-Gakinjiro, Rwanda');
@@ -20,7 +23,15 @@ function getDB(): PDO {
     static $pdo = null;
     if ($pdo === null) {
         try {
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            // Determine DSN based on database driver
+            if (DB_DRIVER === 'pgsql') {
+                // PostgreSQL DSN - uses TCP connection (works on Render)
+                $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME;
+            } else {
+                // MySQL DSN - default for local development
+                $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            }
+            
             $pdo = new PDO($dsn, DB_USER, DB_PASS, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -30,6 +41,7 @@ function getDB(): PDO {
             die('<div style="font-family:sans-serif;padding:20px;background:#fee;border:1px solid red;margin:20px;border-radius:8px">
                 <h2>Database Connection Error</h2>
                 <p>Could not connect to the database. Please check your config.php settings.</p>
+                <p><strong>Driver:</strong> ' . DB_DRIVER . ' | <strong>Host:</strong> ' . DB_HOST . ' | <strong>Database:</strong> ' . DB_NAME . '</p>
                 <small>' . htmlspecialchars($e->getMessage()) . '</small>
                 </div>');
         }
